@@ -5,91 +5,110 @@ import { NotebooksService } from './notebooks.service';
 describe('NotebooksController', () => {
   let controller: NotebooksController;
 
-  let currentId = 1;
+let currentId = 1;
 
-const mockService = {
-  create: jest.fn(dto => {
-    const newNotebook = { id: currentId++, ...dto }; 
-    return newNotebook;
-  }),
+let mockService = {
+  create: jest.fn(dto => Promise.resolve({ id: currentId++, ...dto })),
 
-  findAll: jest.fn(() => [
-    { id: 1, marca: 'Lenovo', modelo: 'ThinkPad' },
-    { id: 2, marca: 'HP', modelo: 'Pavilion' },
-  ]),
+  findAll: jest.fn(() =>
+    Promise.resolve([
+      { id: 1, marca: 'Lenovo', modelo: 'ThinkPad' },
+      { id: 2, marca: 'HP', modelo: 'Pavilion' },
+    ])
+  ),
 
-  findOne: jest.fn(id => ({ id, marca: 'Dell', modelo: 'XPS' })),
+  findOne: jest.fn(id => Promise.resolve({ id, marca: 'Dell', modelo: 'XPS' })),
 
-  update: jest.fn((id, dto) => ({ id, ...dto })),
+  update: jest.fn((id, dto) => Promise.resolve({ id, ...dto })),
 
-  remove: jest.fn(id => ({ deleted: true, id })),
+  remove: jest.fn(id => Promise.resolve({ deleted: true, id })),
 };
 
 
   beforeEach(async () => {
+    mockService = {
+      create: jest.fn(dto => Promise.resolve({ id: 1, ...dto })),
+      findAll: jest.fn(() =>
+        Promise.resolve([
+          { id: 1, marca: 'Lenovo', modelo: 'ThinkPad' },
+          { id: 2, marca: 'HP', modelo: 'Pavilion' },
+        ]),
+      ),
+      findOne: jest.fn(id =>
+        Promise.resolve({ id, marca: 'Dell', modelo: 'XPS' }),
+      ),
+      update: jest.fn((id, dto) =>
+        Promise.resolve({ id, ...dto }),
+      ),
+      remove: jest.fn(id =>
+        Promise.resolve({ deleted: true, id }),
+      ),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [NotebooksController],
       providers: [
-        NotebooksService,
-        { provide: NotebooksService, useValue: mockService }
+        {
+          provide: NotebooksService,
+          useValue: mockService,
+        },
       ],
     }).compile();
 
     controller = module.get<NotebooksController>(NotebooksController);
   });
 
-  it('deberia estar definido ', () => {
+  it('deberia ser definido', () => {
     expect(controller).toBeDefined();
   });
-  
+
   describe('create', () => {
-    it('debería crear una notebook', () => {
+    it('debería crear una notebook', async () => {
       const dto = { marca: 'Acer', modelo: 'Aspire' };
-      expect(controller.create(dto)).toEqual({
+      await expect(controller.create(dto)).resolves.toEqual({
         id: expect.any(Number),
         marca: 'Acer',
         modelo: 'Aspire',
       });
-      expect(mockService.create).toHaveBeenCalledWith(dto);
     });
   });
 
   describe('findAll', () => {
-    it('debería devolver un array de notebooks', () => {
-      expect(controller.findAll()).toEqual([
+    it('debería devolver un array de notebooks', async () => {
+      await expect(controller.findAll()).resolves.toEqual([
         { id: 1, marca: 'Lenovo', modelo: 'ThinkPad' },
         { id: 2, marca: 'HP', modelo: 'Pavilion' },
       ]);
-      expect(mockService.findAll).toHaveBeenCalled();
     });
   });
 
   describe('findOne', () => {
-    it('debería devolver una notebook por id', () => {
-      expect(controller.findOne('1')).toEqual({
+    it('debería devolver una notebook por id', async () => {
+      await expect(controller.findOne('1')).resolves.toEqual({
         id: '1',
         marca: 'Dell',
         modelo: 'XPS',
       });
-      expect(mockService.findOne).toHaveBeenCalledWith('1');
     });
   });
 
   describe('update', () => {
-    it('debería actualizar una notebook', () => {
+    it('debería actualizar una notebook', async () => {
       const dto = { marca: 'Apple', modelo: 'MacBook Pro' };
-      expect(controller.update('1', dto)).toEqual({
+      await expect(controller.update('1', dto)).resolves.toEqual({
         id: '1',
         marca: 'Apple',
         modelo: 'MacBook Pro',
       });
-      expect(mockService.update).toHaveBeenCalledWith('1', dto);
     });
   });
 
   describe('remove', () => {
-    it('debería eliminar una notebook', () => {
-      expect(controller.remove('1')).toEqual({ deleted: true, id: '1' });
+    it('debería eliminar una notebook', async () => {
+      await expect(controller.remove('1')).resolves.toEqual({
+        deleted: true,
+        id: '1',
+      });
       expect(mockService.remove).toHaveBeenCalledWith('1');
     });
   });

@@ -1,7 +1,5 @@
 // notebooks.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Notebook } from './entities/notebook.entity';
 import { CreateNotebookDto } from './dto/create-notebook.dto';
 @Injectable()
@@ -19,20 +17,20 @@ export class NotebooksService {
     return this.notebooks;
   }
 
-  findOne(id: string): Notebook {
+  findOne(id: number): Notebook {
     const notebook = this.notebooks.find(n => n.id === Number(id));
     if (!notebook) throw new NotFoundException(`Notebook con id ${id} no encontrada`);
     return notebook;
   }
 
-  update(id: string, dto: Partial<CreateNotebookDto>): Notebook {
+  update(id: number, dto: Partial<CreateNotebookDto>): Notebook {
     const index = this.notebooks.findIndex(n => n.id === Number(id));
     if (index === -1) throw new NotFoundException(`Notebook con id ${id} no encontrada`);
     this.notebooks[index] = { ...this.notebooks[index], ...dto };
     return this.notebooks[index];
   }
 
-  remove(id: string): { deleted: boolean } {
+  remove(id: number): { deleted: boolean } {
     const index = this.notebooks.findIndex(n => n.id === Number(id));
     if (index === -1) throw new NotFoundException(`Notebook con id ${id} no encontrada`);
     this.notebooks.splice(index, 1);
