@@ -85,7 +85,7 @@ let mockService = {
   describe('findOne', () => {
     it('debería devolver una notebook por id', async () => {
       await expect(controller.findOne('1')).resolves.toEqual({
-        id: '1',
+        id: 1,
         marca: 'Dell',
         modelo: 'XPS',
       });
@@ -96,7 +96,7 @@ let mockService = {
     it('debería actualizar una notebook', async () => {
       const dto = { marca: 'Apple', modelo: 'MacBook Pro' };
       await expect(controller.update('1', dto)).resolves.toEqual({
-        id: '1',
+        id: 1,
         marca: 'Apple',
         modelo: 'MacBook Pro',
       });
@@ -107,9 +107,8 @@ let mockService = {
     it('debería eliminar una notebook', async () => {
       await expect(controller.remove('1')).resolves.toEqual({
         deleted: true,
-        id: '1',
       });
-      expect(mockService.remove).toHaveBeenCalledWith('1');
+      expect(mockService.remove).toHaveBeenCalledWith(1);
     });
   });
 });

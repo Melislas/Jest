@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotebooksModule } from './notebooks.module';
 import { Notebook } from './entities/notebook.entity';
 
-
 describe('NotebooksController (integration)', () => {
 let app: INestApplication;
 

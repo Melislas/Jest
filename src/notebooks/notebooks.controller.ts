@@ -35,7 +35,7 @@ export class NotebooksController {
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Notebook> {
     try {
-      return await this.notebooksService.findOne(id);
+      return await this.notebooksService.findOne(Number(id));
     } catch (error) {
       throw new HttpException(
         `Notebook con id ${id} no encontrada`,
@@ -64,7 +64,7 @@ export class NotebooksController {
     @Body() dto: Partial<CreateNotebookDto>,
   ): Promise<Notebook> {
     try {
-      return await this.notebooksService.update(id, dto);
+      return  this.notebooksService.update(Number(id), dto);
     } catch (error) {
       throw new HttpException(
         `Error updating notebook with id ${id}`,
@@ -74,15 +74,9 @@ export class NotebooksController {
   }
 
   // DELETE /notebooks/:id
-  @Delete(':id')
+    @Delete(':id')
   async remove(@Param('id') id: string): Promise<{ deleted: boolean }> {
-    try {
-      return await this.notebooksService.remove(id);
-    } catch (error) {
-      throw new HttpException(
-        `Error deleting notebook with id ${id}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    await this.notebooksService.remove(Number(id)); 
+    return { deleted: true }; 
   }
 }

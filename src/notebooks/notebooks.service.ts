@@ -30,10 +30,11 @@ export class NotebooksService {
     return this.notebooks[index];
   }
 
-  remove(id: number): { deleted: boolean } {
-    const index = this.notebooks.findIndex(n => n.id === Number(id));
-    if (index === -1) throw new NotFoundException(`Notebook con id ${id} no encontrada`);
-    this.notebooks.splice(index, 1);
-    return { deleted: true };
-  }
+remove(id: number): Notebook {
+  const index = this.notebooks.findIndex(n => n.id === Number(id));
+  if (index === -1) throw new NotFoundException(`Notebook con id ${id} no encontrada`);
+  const [removed] = this.notebooks.splice(index, 1);
+  return removed;
+}
+
 }
